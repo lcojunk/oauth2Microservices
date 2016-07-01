@@ -11,6 +11,7 @@ import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 public class Oauth2leoDiscoveryApplication {
 
     public static void main(String[] args) {
+        System.out.println("Starting service discovery");
         SpringApplication.run(Oauth2leoDiscoveryApplication.class, args);
     }
 }
