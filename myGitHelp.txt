@@ -1,0 +1,7 @@
+cd d:/\!Leon/\Java/\ForBachelor/\oauth2Microservices
+git init
+git add .
+git commit -m "First commit"
+git remote add origin https://github.com/lcojunk/oauth2Microservices.git
+git remote -v	
+git push origin master

@@ -1,0 +1,14 @@
+spring:
+    application:
+        name: oauth2-search-withsecurity
+    cloud:
+        config:
+           uri: http://localhost:${config.port:8888}
+---
+spring:
+    profiles: docker
+    application:
+        name: oauth2-search-withsecurity
+    cloud:
+        config:
+           uri: http://172.17.0.1:${config.port:8888}

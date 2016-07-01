@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<name>oauth2Microservices</name>
+    <groupId>leo.demo</groupId>
+	<artifactId>oauth2Microservices</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	
+	<modules>
+		<module>oauth2Microservices-configserver</module>
+		<module>oauth2Microservices-discovery</module>
+		<module>oauth2Microservices-edgeserver</module>
+		<module>oauth2Microservices-authserver</module>
+		<module>oauth2Microservices-create-withsecurity</module>
+		<module>oauth2Microservices-search-withsecurity</module>
+	</modules>
+</project>

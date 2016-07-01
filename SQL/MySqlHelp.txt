@@ -1,0 +1,21 @@
+docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
+docker exec -it some-mysql bash
+
+sudo docker run --name mysql57 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=zergling -d mysql:5.7.11
+sudo docker exec -it mysql57 bash
+mysql --password=zergling 
+
+CREATE DATABASE referenzer CHARACTER SET utf8;
+GRANT ALL ON referenzer.* TO 'referenzer'@'%' IDENTIFIED BY 'zergling' WITH GRANT OPTION;
+
+sudo docker run -it --link mysql57:mysql --rm mysql sh -c 'exec mysql -h"$MYSQL_PORT_3306_TCP_ADDR" -P"$MYSQL_PORT_3306_TCP_PORT" -uroot -p"$MYSQL_ENV_MYSQL_ROOT_PASSWORD"'
+
+sudo docker exec -it oauth2microservices_democreate_1 bash
+mysql --password=zergling <CreateDatabase.sql
+
+mysql --password=zergling <d:\!Leon\Java\Tutorials\Spring\oauth2Microservices\SQL\CreateDatabase.sql
+
+windows:
+source s:\\testCreateDatabase.sql;
+
+source d:\\!Leon\\Java\\Tutorials\\Spring\\oauth2Microservices\\SQL\\testCreateDatabase.sql;

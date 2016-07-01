@@ -1,0 +1,57 @@
+server:
+  port: 0
+#  port: ${vcap.application.port:9005}
+info:
+  component: ${spring.application.name}
+#debug: true
+eureka:
+  instance:
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    metadataMap:
+       instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+externalconfig:
+  isloaded: false
+  message: none
+#spring:
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/demoreferenzer
+#    username: demoreferenzer
+#    password: zergling
+#    testWhileIdle: true
+#    validationQuery: SELECT 1
+#  jpa:
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: update
+#      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+#      dialect: org.hibernate.dialect.MySQL5Dialect
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: ${vcap.services.eureka-service.credentials.uri:http://127.0.0.1:8761}/eureka/
+
+logging:
+    level:
+#        com.netflix.discovery.DiscoveryClient: 'INFO'
+        com.netflix.discovery: 'OFF'
+    file: "logs/${spring.application.name}.log"
+---
+spring:
+    profiles: docker
+server:
+    port: 9005
+information:
+    activeprofile: docker
+eureka:
+  instance:
+    preferIpAddress: true
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    metadataMap:
+       instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    serviceUrl:
+      defaultZone: http://demodiscovery:8761/eureka/
+logging:
+    level:
+        com.netflix.discovery.DiscoveryClient: 'INFO'
+    file: "tmp/logs/${spring.application.name}.log"

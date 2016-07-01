@@ -1,0 +1,22 @@
+#disable error log: "DiscoveryClient_SEARCH/xx-xxx-xxxxxxx - registration failedjava.net.ConnectException: Connection refused: connect
+logging:
+    level:
+        com.netflix.discovery.DiscoveryClient: 'INFO'
+        com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient: 'INFO'
+        com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient : 'INFO'
+    file: "logs/${spring.application.name}.log"
+---
+spring:
+    profiles: docker
+information:
+    activeprofile: docker
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: http://demodiscovery:8761/eureka/
+logging:
+    level:
+        com.netflix.discovery.DiscoveryClient: 'INFO'
+    file: "tmp/logs/${spring.application.name}.log"

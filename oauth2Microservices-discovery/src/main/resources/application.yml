@@ -1,0 +1,60 @@
+#spring:
+#  application:
+#    name: oauth2Microservice-discovery
+
+server:
+  port: ${PORT:8761}
+info:
+  application: oauth2Microservice-discovery
+
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+#        serviceUrl:
+#            defaultZone: http://discovery:${server.port}/eureka/        
+    server:
+      waitTimeInMsWhenSyncEmpty: 0
+        
+#disable error log "StatusResource: Could not determine if the replica is available"
+logging:
+    level:
+        com.netflix.eureka.resources: 'WARN'
+        org.springframework.boot.context.embedded.FilterRegistrationBean: 'WARN'
+        org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: 'WARN'
+        org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping: 'WARN'
+        org.springframework.web.servlet.handler.SimpleUrlHandlerMapping: 'WARN'
+        org.springframework.jmx.export.annotation.AnnotationMBeanExporter: 'WARN'
+        com.netflix.discovery.provider.DiscoveryJerseyProvider: 'WARN'
+        com.netflix.config.sources.URLConfigurationSource: 'WARN' 
+        org.springframework.cloud.netflix.eureka.server.EurekaServerBootstrap: 'WARN' 
+#        com.netflix.eureka.InstanceRegistry: 'DEBUG'
+    file: "logs/${spring.application.name}.log"
+---
+spring:
+    profiles: docker
+information:
+    activeprofile: docker
+eureka:
+    instance:
+        hostname: demodiscovery
+    client:
+        registerWithEureka: false
+        fetchRegistry: false
+        serviceUrl:
+            defaultZone: http://demodiscovery:${server.port}/eureka/        
+    server:
+        waitTimeInMsWhenSyncEmpty: 0
+logging:
+    level:
+        com.netflix.eureka.resources: 'WARN'
+        org.springframework.boot.context.embedded.FilterRegistrationBean: 'WARN'
+        org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: 'WARN'
+        org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping: 'WARN'
+        org.springframework.web.servlet.handler.SimpleUrlHandlerMapping: 'WARN'
+        org.springframework.jmx.export.annotation.AnnotationMBeanExporter: 'WARN'
+        com.netflix.discovery.provider.DiscoveryJerseyProvider: 'WARN'
+        com.netflix.config.sources.URLConfigurationSource: 'WARN' 
+        org.springframework.cloud.netflix.eureka.server.EurekaServerBootstrap: 'WARN' 
+#        com.netflix.eureka.InstanceRegistry: 'DEBUG'
+    file: "tmp/logs/${spring.application.name}.log"

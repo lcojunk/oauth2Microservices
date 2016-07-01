@@ -1,0 +1,60 @@
+server:
+  port: ${PORT:8888}
+
+management:
+  context-path: /admin
+   
+spring:
+  cloud:
+    config:
+      server:
+        git:
+#          uri: https://github.com/spring-cloud-samples/config-repo
+          uri: https://github.com/lcojunk/config-repo1.git
+#          uri: file:///d:/!Leon/Java/Tutorials/Spring/CloudConfig/config-repo/
+          basedir: target/config
+
+info:
+  component: ${spring.application.name}
+oauth2AuthServer:  
+  path: http://localhost:9999
+endpoints:
+  restart:
+    enabled: true
+  shutdown:
+    enabled: true
+  health:
+    sensitive: false
+
+logging:
+  level:
+    org.springframework.cloud: 'DEBUG'
+    com.netflix.discovery.DiscoveryClient: 'INFO'
+  file: "logs/${spring.application.name}.log"
+
+---
+spring:
+  profiles: docker
+  cloud:
+    config:
+      server:
+        git:
+#          uri: https://github.com/spring-cloud-samples/config-repo
+          uri: https://github.com/lcojunk/config-repo1.git
+#          uri: file:///d:/!Leon/Java/Tutorials/Spring/CloudConfig/config-repo/
+          basedir: tmp/config/repo
+information:
+    activeprofile: docker
+oauth2AuthServer:  
+  path: http://172.17.0.1:9999
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: http://demodiscovery:8761/eureka/
+logging:
+    level:
+        com.netflix.discovery.DiscoveryClient: 'INFO'
+        org.springframework.cloud: 'DEBUG'
+    file: "tmp/logs/${spring.application.name}.log"
