@@ -6,6 +6,8 @@
 package leo.demo.demosearch.rest;
 
 import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import leo.demo.MicroserviceConfig;
 import leo.demo.demosearch.dto.*;
@@ -13,6 +15,8 @@ import leo.demo.demosearch.model.*;
 import leo.demo.demosearch.services.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +41,39 @@ public class RestCrudReferenceController {
 
 //    @Autowired
 //    private PublishReferenceService publishReferenceService;
+    private List<String> getRoles() {
+        List<String> result = new ArrayList<>();
+        Collection<SimpleGrantedAuthority> authorities
+                = (Collection<SimpleGrantedAuthority>) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getAuthorities();
+        for (SimpleGrantedAuthority authority : authorities) {
+            result.add(authority.getAuthority());
+        }
+        return result;
+    }
+
+    private boolean isRegisteredUser() {
+        List<String> roles = getRoles();
+        if (roles == null || roles.size() <= 0) {
+            return false;
+        }
+        for (String role : roles) {
+            if (role != null) {
+                log.info("Checking user role: " + role);
+                if (role.matches("ROLE_ADMIN")
+                        || role.matches("ROLE_USER")
+                        || role.matches("ROLE_DBA")) {
+                    log.info("Role " + role + " found");
+                    return true;
+                }
+            }
+        }
+        log.info("user is not registered");
+        return false;
+    }
+
     @RequestMapping(value = "/test/{name}", method = RequestMethod.GET)
     public String test(@PathVariable String name) {
         return "path=/test/" + name;
@@ -51,6 +88,9 @@ public class RestCrudReferenceController {
     @RequestMapping(method = RequestMethod.POST)
     public RestResponse<List<Reference>, Reference> create(@RequestBody Reference request) {
         log.info("creating entity:" + gson.toJson(request));
+        if (!isRegisteredUser()) { //user is not registered to do this
+            return readAll(); //return a list of reference
+        }
         if (request != null) {
             request.setId(null);
         }
@@ -60,6 +100,7 @@ public class RestCrudReferenceController {
     @RequestMapping(method = RequestMethod.GET)
     public RestResponse<List<Reference>, Reference> readAll() {
         log.info(" Reading all references");
+        isRegisteredUser();
         RestResponse<List<Reference>, Reference> response = new RestResponse<>();
         try {
             response.setResult(service.getAll());
@@ -90,6 +131,9 @@ public class RestCrudReferenceController {
     @RequestMapping(method = RequestMethod.PUT)
     public RestResponse<List<Reference>, Reference> update(@RequestBody Reference request) {
         log.info("updating reference: " + gsonPretty.toJson(request));
+        if (!isRegisteredUser()) { //user is not registered to do this
+            return readAll(); //return a list of reference
+        }
         RestResponse<List<Reference>, Reference> response = new RestResponse<>(request);
         try {
             if (request != null) {
@@ -107,6 +151,12 @@ public class RestCrudReferenceController {
     public RestResponse<List<Reference>, String> delete(@PathVariable String id) {
         log.info("deleting reference with id=" + id);
         RestResponse<List<Reference>, String> response = new RestResponse<>(id);
+        if (!isRegisteredUser()) { //user is not registered to do this
+            response.setResult(service.getAll());
+            response.setRequest(id);
+            response.setError("User not autorised to delete references");
+            return response; //return a list of reference
+        }
         try {
             Reference entity = new Reference();
             entity.setId(id);

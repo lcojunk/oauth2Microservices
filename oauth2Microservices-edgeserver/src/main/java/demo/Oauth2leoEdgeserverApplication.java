@@ -38,8 +38,7 @@ public class Oauth2leoEdgeserverApplication extends WebSecurityConfigurerAdapter
         SpringApplication.run(Oauth2leoEdgeserverApplication.class, args);
     }
 
-    @Override
-    public void configure(HttpSecurity http) throws Exception {
+    public void no_security(HttpSecurity http) throws Exception {
         http.logout().clearAuthentication(true).invalidateHttpSession(true).deleteCookies("XSRF-TOKEN", "JSESSIONID").logoutSuccessUrl("/")
                 .and().antMatcher("/**").authorizeRequests()
                 .antMatchers(
@@ -63,6 +62,45 @@ public class Oauth2leoEdgeserverApplication extends WebSecurityConfigurerAdapter
                 .anyRequest().authenticated().and().csrf()
                 .csrfTokenRepository(csrfTokenRepository()).and()
                 .addFilterAfter(csrfHeaderFilter(), CsrfFilter.class);
+    }
+
+    public void with_security(HttpSecurity http) throws Exception {
+        http.logout().clearAuthentication(true).invalidateHttpSession(true).deleteCookies("XSRF-TOKEN", "JSESSIONID").logoutSuccessUrl("/")
+                .and().antMatcher("/**").authorizeRequests()
+                .antMatchers(
+                        "/index.html",
+                        "/home.html",
+                        "/",
+                        "/login",
+                        "/templates/**",
+                        "/nosecurity/**",
+                        "/oauth2_search/references",
+                        "/oauth2_search/references/**",
+                        "/oauth2_search/api/references",
+                        "/oauth2_search/api/references/**",
+                        "/references",
+                        "/references/**",
+                        "/api/references",
+                        "/api/references/**",
+                        "/oauth2_search/app/**",
+                        "/oauth2_search/app/name/**",
+                        "/oauth/revoke-token",
+                        "/uaa/oauth/revoke-token",
+                        "/oauth/revoke-token/**",
+                        "/uaa/oauth/revoke-token/**",
+                        "/app/**",
+                        "/app/name/**",
+                        "/css/**",
+                        "/js/**"
+                ).permitAll()
+                .anyRequest().authenticated().and().csrf()
+                .csrfTokenRepository(csrfTokenRepository()).and()
+                .addFilterAfter(csrfHeaderFilter(), CsrfFilter.class);
+    }
+
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        with_security(http);
     }
 
     private String objectToString(Object o) {

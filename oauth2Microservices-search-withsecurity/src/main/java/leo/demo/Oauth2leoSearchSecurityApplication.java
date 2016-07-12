@@ -38,7 +38,7 @@ public class Oauth2leoSearchSecurityApplication extends ResourceServerConfigurer
     static Logger log = Logger.getLogger(Oauth2leoSearchSecurityApplication.class.getName());
     private Date serviceStart = new Date();
 
-    private void setStandartSecurity(HttpSecurity http) throws Exception {
+    private void setStandartSecurity1(HttpSecurity http) throws Exception {
         http.logout().and().antMatcher("/**").authorizeRequests()
                 .antMatchers(
                         "/",
@@ -57,6 +57,35 @@ public class Oauth2leoSearchSecurityApplication extends ResourceServerConfigurer
                         "/references/**",
                         "/env",
                         "/app/**",
+                        "/css/**",
+                        "/js/**").permitAll()
+                .anyRequest().authenticated();
+    }
+
+    private void setStandartSecurity(HttpSecurity http) throws Exception {
+        http.logout().and().antMatcher("/**").authorizeRequests()
+                .antMatchers(
+                        "/",
+                        "/index.html",
+                        "/home.html",
+                        "/templates/**",
+                        "/oauth2_search/references",
+                        "/oauth2_search/references/**",
+                        "/oauth2_search/api/references",
+                        "/oauth2_search/api/references/**",
+                        "/references",
+                        "/references/**",
+                        "/api/references",
+                        "/api/references/**",
+                        "/env",
+                        "/oauth2_search/app/**",
+                        "/oauth2_search/app/name/**",
+                        "/app/**",
+                        "/app/name/**",
+                        "/oauth/revoke-token",
+                        "/uaa/oauth/revoke-token",
+                        "/oauth/revoke-token/**",
+                        "/uaa/oauth/revoke-token/**",
                         "/css/**",
                         "/js/**").permitAll()
                 .anyRequest().authenticated();

@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -40,6 +42,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -107,8 +110,33 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
 
     @RequestMapping(value = "/oauth/revoke-token", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public void myLogout(HttpServletRequest request) {
+    public void myLogout(HttpServletRequest request,
+            Principal principal,
+            @CookieValue(value = "JSESSIONID", defaultValue = "JSESSIONID") String sessionCookie,
+            @CookieValue(value = "XSRF-TOKEN", defaultValue = "XSRF-TOKEN") String tokenCookie,
+            @RequestHeader Map<String, String> headers) {
         log.info("/oauth/revoke-token is executed");
+        log.info("headers" + gsonPretty.toJson(headers));
+        log.info("user:" + gsonPretty.toJson(principal));
+        Collection<OAuth2AccessToken> tokList = authTokenStore.findTokensByClientId("acme");
+        if (tokList != null) {
+            log.info("acme tokens:" + gsonPretty.toJson(tokList));
+        }
+        Collection<OAuth2AccessToken> tokList1 = authTokenStore.findTokensByClientIdAndUserName("acme", principal.getName());
+        if (tokList1 != null) {
+            log.info("acme und " + principal.getName() + " tokens:" + gsonPretty.toJson(tokList));
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        log.info("authentication:" + gsonPretty.toJson(authentication));
+
+        try {
+            WebAuthenticationDetails details = (WebAuthenticationDetails) authentication.getDetails();
+            log.info("details:" + gsonPretty.toJson(details));
+
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null) {
             String tokenValue = authHeader.replace("Bearer", "").trim();
@@ -116,6 +144,12 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
             authTokenStore.removeAccessToken(accessToken);
             log.info("authTokenStore.removeAccessToken(accessToken)");
         }
+        HttpSession session = request.getSession(false);
+        SecurityContext context = SecurityContextHolder.getContext();
+        for (OAuth2AccessToken t : tokList1) {
+            authTokenStore.removeAccessToken(t);
+        }
+
         log.info("Done");
     }
 
@@ -176,6 +210,10 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
                             "/login",
                             "/oauth/authorize",
                             "/showmetokenstore/**",
+                            "/oauth/revoke-token",
+                            "/uaa/oauth/revoke-token",
+                            "/oauth/revoke-token/**",
+                            "/uaa/oauth/revoke-token/**",
                             "/oauth/confirm_access"
                     )
                     .and()

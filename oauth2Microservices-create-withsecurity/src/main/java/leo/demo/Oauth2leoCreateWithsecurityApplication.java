@@ -37,8 +37,6 @@ public class Oauth2leoCreateWithsecurityApplication extends ResourceServerConfig
                         "/index.html",
                         "/home.html",
                         "/api/**",
-                        "/branches/**",
-                        "/oauth2_create/**",
                         "/templates/**",
                         "/app/**",
                         "/css/**",
